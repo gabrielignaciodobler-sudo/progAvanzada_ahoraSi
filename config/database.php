@@ -4,21 +4,25 @@
 
 declare(strict_types=1);
 
-// Devuelve una variable de entorno o el valor por defecto indicado
+$configuracionBD = require __DIR__ . '/database.private.php';
 
-function parametroBD(string $nombre, string $porDefecto): string
-{
-    $valor = getenv($nombre);
-
-    return ($valor !== false && $valor !== '') ? $valor : $porDefecto;
+if (!is_array($configuracionBD)) {
+    throw new RuntimeException('La configuración privada de la base de datos debe devolver un arreglo.');
 }
 
-define('DB_HOST', parametroBD('DB_HOST', '127.0.0.1'));
-define('DB_PORT', parametroBD('DB_PORT', '3306'));
-define('DB_NAME', parametroBD('DB_NAME', 'biblioteca'));
-define('DB_USER', parametroBD('DB_USER', 'root'));
-define('DB_PASS', parametroBD('DB_PASS', ''));      // XAMPP: root sin contraseña
-define('DB_CHARSET', parametroBD('DB_CHARSET', 'utf8mb4'));
+$parametrosBDRequeridos = ['DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASS', 'DB_CHARSET'];
+foreach ($parametrosBDRequeridos as $parametroBD) {
+    if (!array_key_exists($parametroBD, $configuracionBD) || !is_string($configuracionBD[$parametroBD])) {
+        throw new RuntimeException('Falta un parámetro válido en config/database.private.php: ' . $parametroBD);
+    }
+}
+
+define('DB_HOST', $configuracionBD['DB_HOST']);
+define('DB_PORT', $configuracionBD['DB_PORT']);
+define('DB_NAME', $configuracionBD['DB_NAME']);
+define('DB_USER', $configuracionBD['DB_USER']);
+define('DB_PASS', $configuracionBD['DB_PASS']);
+define('DB_CHARSET', $configuracionBD['DB_CHARSET']);
 
 const MENSAJE_ERROR_CONEXION =
     'No se pudo establecer conexión con el servidor de datos. '
