@@ -1,5 +1,2 @@
-<footer>
-    <hr>
-    <p>Biblioteca - Programación Avanzada</p>
-    <p>UADER - 2026</p>
-</footer>
+<?php
+include dirname(__DIR__) . '/vistas/layouts/footer.php';

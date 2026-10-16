@@ -1,31 +1,72 @@
 <?php
-session_start();
+/**
+ * ============================================================================
+ *  index.php - Front Controller / Enrutador Principal
+ *  Punto de entrada único de la aplicación bajo el patrón MVC.
+ *  Recibe los parámetros `c` (controlador) y `a` (acción) por querystring.
+ * ============================================================================
+ */
 
-if (!empty($_SESSION['logueado']) && $_SESSION['logueado'] === true) {
-    header('Location: inicio.php');
-    exit;
+declare(strict_types=1);
+
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/php/auth.php';
+
+iniciarSesion();
+
+// Resolución de controlador y acción con valores por defecto
+$controladorNombre = strtolower((string) ($_GET['c'] ?? $_GET['controlador'] ?? 'home'));
+$accionNombre      = (string) ($_GET['a'] ?? $_GET['accion'] ?? '');
+
+// Mapa de controladores disponibles
+$controladores = [
+    'home'   => 'HomeControlador',
+    'auth'   => 'AuthControlador',
+    'libro'  => 'LibroControlador',
+    'libros' => 'LibroControlador',
+];
+
+if (!isset($controladores[$controladorNombre])) {
+    http_response_code(404);
+    die("Error 404: El controlador «{$controladorNombre}» no existe.");
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Biblioteca</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=<?php echo filemtime(__DIR__ . '/css/style.css'); ?>">
-</head>
 
-<body>
-<?php include("php/header.php"); ?>
-<main class="home-hero">
-  <p class="bienvenida-central">Bienvenido a la Biblioteca de la Universidad Autónoma de Entre Rios <br>Por favor inicia sesión para administrar tu contenido</p>
-  <div class="hero-acciones">
-    <a href="login.php" class="btn-login btn-login--compact">Iniciar sesión</a>
-    <a href="registro.php" class="btn-login btn-login--compact btn-login--secundario">Registrar cuenta</a>
-  </div>
-</main>
-<?php include("php/footer.php"); ?>  
-</body>
-</html>
+$claseControlador   = $controladores[$controladorNombre];
+$archivoControlador = __DIR__ . '/controladores/' . $claseControlador . '.php';
+
+if (!file_exists($archivoControlador)) {
+    http_response_code(500);
+    die("Error 500: No se encuentra el archivo del controlador «{$claseControlador}».");
+}
+
+require_once $archivoControlador;
+
+/** @var object $instancia */
+$instancia = new $claseControlador();
+
+// Si no se especificó acción, resolvemos la acción predeterminada según el controlador
+if ($accionNombre === '') {
+    if ($controladorNombre === 'auth') {
+        $accionNombre = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' ? 'login' : 'mostrarLogin';
+    } else {
+        $accionNombre = 'index';
+    }
+}
+
+// Mapeos intuitivos de acciones (alias amigables)
+$aliasAcciones = [
+    'mostrarlogin'    => 'mostrarLogin',
+    'login'           => ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' ? 'login' : 'mostrarLogin',
+    'mostrarregistro' => 'mostrarRegistro',
+    'registro'        => ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' ? 'registro' : 'mostrarRegistro',
+];
+
+$accionMetodo = $aliasAcciones[strtolower($accionNombre)] ?? $accionNombre;
+
+if (!method_exists($instancia, $accionMetodo) || !is_callable([$instancia, $accionMetodo])) {
+    http_response_code(404);
+    die("Error 404: La acción «{$accionNombre}» no existe en «{$claseControlador}».");
+}
+
+// Ejecución del controlador y acción
+$instancia->$accionMetodo();

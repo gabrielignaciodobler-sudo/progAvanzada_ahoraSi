@@ -29,7 +29,7 @@ function usuarioLogueado(): bool
 function requerirLogin(): void
 {
     if (!usuarioLogueado()) {
-        header('Location: login.php');
+        header('Location: index.php?c=auth&a=login');
         exit;
     }
 }
@@ -72,7 +72,7 @@ function requerirPermisoGestion(): void
 
     if (!puedeGestionarLibros()) {
         setFlash('error', 'Acceso denegado: tu rol de «' . escapar(rolActual() ?? 'desconocido') . '» no tiene permisos para realizar altas, bajas o modificaciones de libros.');
-        header('Location: libros.php');
+        header('Location: index.php?c=libro&a=index');
         exit;
     }
 }
