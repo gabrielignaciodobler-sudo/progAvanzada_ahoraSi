@@ -1,73 +1,51 @@
-class ValidadorDatos {
-  constructor() {
-    this.usuarioInput = document.getElementById('usuario') || document.getElementById('nombre');
-    this.passwordInput = document.getElementById('password');
-    this.rolSelect = document.getElementById('rol');
-    this.btnSubmit = document.getElementById('btnSubmit');
-    this.form = document.querySelector('form');
+(() => {
+  const form = document.querySelector('form[action*="c=auth"]');
+  const submitButton = document.getElementById('btnSubmit');
 
-    this.contieneLetraONumero = /[a-zA-Z0-9]/;
-    this.iniciarEventos();
-    this.validarCampos();
+  if (!form || !submitButton) {
+    return;
   }
 
-  validarCampos() {
-    const usuarioValido = this.usuarioInput ? this.contieneLetraONumero.test(this.usuarioInput.value.trim()) : true;
-    const passwordValida = this.passwordInput ? this.contieneLetraONumero.test(this.passwordInput.value.trim()) : true;
-    const rolValido = this.rolSelect ? (this.rolSelect.value.trim() !== '') : true;
-    const captchaValido = typeof grecaptcha !== 'undefined' && grecaptcha.getResponse().length > 0;
+  window.onRecaptchaSuccess = () => {
+    submitButton.disabled = false;
+  };
 
-    if (this.btnSubmit) {
-      this.btnSubmit.disabled = !(usuarioValido && passwordValida && rolValido && captchaValido);
-    }
+  window.onRecaptchaExpired = () => {
+    submitButton.disabled = true;
+  };
+
+  if (typeof window.JustValidate !== 'function') {
+    console.error('No se pudo cargar JustValidate; se usará la validación nativa del navegador.');
+    form.noValidate = false;
+    return;
   }
 
-  onRecaptchaSuccess() {
-    this.validarCampos();
-  }
+  const validator = new window.JustValidate(form, {
+    errorLabelCssClass: 'error-message',
+    errorLabelStyle: {},
+    focusInvalidField: true,
+    submitFormAutomatically: true,
+    validateBeforeSubmitting: true,
+  });
 
-  onRecaptchaExpired() {
-    if (this.btnSubmit) {
-      this.btnSubmit.disabled = true;
-    }
-  }
+  validator
+    .addField('#usuario', [
+      {
+        rule: 'required',
+        errorMessage: 'Ingresá tu nombre de usuario.',
+      },
+      {
+        rule: 'maxLength',
+        value: 50,
+        errorMessage: 'El nombre de usuario no puede superar los 50 caracteres.',
+      },
+    ])
+    .addField('#password', [
+      {
+        rule: 'required',
+        errorMessage: 'Ingresá tu contraseña.',
+      },
+    ]);
 
-  iniciarEventos() {
-    if (this.usuarioInput) {
-      this.usuarioInput.addEventListener('input', () => this.validarCampos());
-    }
-    if (this.passwordInput) {
-      this.passwordInput.addEventListener('input', () => this.validarCampos());
-    }
-    if (this.rolSelect) {
-      this.rolSelect.addEventListener('change', () => this.validarCampos());
-    }
-
-    if (this.form) {
-      this.form.addEventListener('submit', (event) => {
-        const usuarioValido = this.usuarioInput ? this.contieneLetraONumero.test(this.usuarioInput.value.trim()) : true;
-        const passwordValida = this.passwordInput ? this.contieneLetraONumero.test(this.passwordInput.value.trim()) : true;
-        const rolValido = this.rolSelect ? (this.rolSelect.value.trim() !== '') : true;
-        const captchaValido = typeof grecaptcha !== 'undefined' && grecaptcha.getResponse().length > 0;
-
-        if (!usuarioValido || !passwordValida || !rolValido || !captchaValido) {
-          event.preventDefault();
-          if (this.btnSubmit) {
-            this.btnSubmit.disabled = true;
-          }
-          return;
-        }
-      });
-    }
-
-    window.onRecaptchaSuccess = () => this.onRecaptchaSuccess();
-    window.onRecaptchaExpired = () => this.onRecaptchaExpired();
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
-  if (form) {
-    new ValidadorDatos();
-  }
-});
+  form.noValidate = true;
+})();

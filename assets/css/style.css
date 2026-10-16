@@ -451,6 +451,10 @@ form input:focus {
   border-bottom: 2px solid var(--vino);
 }
 
+form input.just-validate-error-field {
+  border-bottom: 2px solid var(--vino);
+}
+
 form input:focus-visible {
   outline: 2px solid var(--dorado);
   outline-offset: 3px;
