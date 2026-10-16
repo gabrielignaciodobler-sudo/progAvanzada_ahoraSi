@@ -284,6 +284,28 @@ main {
   font-size: 0.72rem;
 }
 
+.hero-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.btn-login--secundario,
+.btn-login--secundario:link,
+.btn-login--secundario:visited {
+  background: var(--vino);
+  border: 1px solid var(--vino-oscuro);
+  color: var(--hueso);
+}
+
+.btn-login--secundario:hover {
+  background: var(--vino-oscuro);
+  border-color: var(--dorado);
+  color: var(--hueso);
+  box-shadow: 0 6px 12px rgba(20, 42, 31, 0.3);
+}
+
 
 .ornamento {
   display: flex;
@@ -386,12 +408,17 @@ form::before {
   animation: pestanaEntra 0.5s ease 0.5s both;
 }
 
+form.form--registro::before {
+  content: "Registro de cuenta";
+}
+
 form > * {
   position: relative;
   z-index: 1;
 }
 
-form input {
+form input,
+form select {
   width: 100%;
   border: none;
   border-bottom: 1px solid var(--pergamino-linea);
@@ -402,6 +429,16 @@ form input {
   color: var(--tinta);
   outline: none;
   transition: border-color 0.15s ease;
+}
+
+form select {
+  cursor: pointer;
+}
+
+form select option {
+  background: var(--pergamino);
+  color: var(--tinta);
+  font-family: var(--fuente-campo);
 }
 
 form input::placeholder {
@@ -536,6 +573,35 @@ form input:-webkit-autofill:active {
   font-size: 0.88rem;
   color: var(--vino);
   text-align: center;
+}
+
+.success-message {
+  margin: -0.4rem 0 0;
+  font-family: var(--fuente-titulo);
+  font-size: 0.88rem;
+  color: #1e5a22;
+  text-align: center;
+  font-weight: 600;
+}
+
+.auth-enlace {
+  margin: 0.4rem 0 0;
+  font-family: var(--fuente-campo);
+  font-size: 0.82rem;
+  text-align: center;
+  color: var(--tinta);
+}
+
+.auth-enlace a {
+  color: var(--vino);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+
+.auth-enlace a:hover {
+  color: var(--verde-oscuro);
 }
 
 form button {

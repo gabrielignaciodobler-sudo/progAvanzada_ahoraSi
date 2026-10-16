@@ -8,6 +8,8 @@ if (!empty($_SESSION['logueado']) && $_SESSION['logueado'] === true) {
 
 $error = $_SESSION['error'] ?? '';
 unset($_SESSION['error']);
+$exito = $_SESSION['exito'] ?? '';
+unset($_SESSION['exito']);
 $recaptchaSiteKey = '6Le1TM0tAAAAACvxeirW5N62-dAb8khdivkvkn41';
 ?>
 <!DOCTYPE html>
@@ -58,8 +60,15 @@ $recaptchaSiteKey = '6Le1TM0tAAAAACvxeirW5N62-dAb8khdivkvkn41';
         <?php if (!empty($error)) : ?>
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
+        <?php if (!empty($exito)) : ?>
+            <p class="success-message"><?php echo htmlspecialchars($exito); ?></p>
+        <?php endif; ?>
 
         <button type="submit" id="btnSubmit" disabled>Entrar</button>
+
+        <p class="auth-enlace">
+          ¿No tenés cuenta? <a href="registro.php">Registrate acá</a>
+        </p>
     </form>
 
     <div class="decoracion decoracion--der" aria-hidden="true">

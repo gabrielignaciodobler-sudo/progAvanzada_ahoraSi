@@ -1,8 +1,8 @@
-
 class ValidadorDatos {
   constructor() {
-    this.usuarioInput = document.getElementById('usuario');
+    this.usuarioInput = document.getElementById('usuario') || document.getElementById('nombre');
     this.passwordInput = document.getElementById('password');
+    this.rolSelect = document.getElementById('rol');
     this.btnSubmit = document.getElementById('btnSubmit');
     this.form = document.querySelector('form');
 
@@ -12,11 +12,14 @@ class ValidadorDatos {
   }
 
   validarCampos() {
-    const usuarioValido = this.contieneLetraONumero.test(this.usuarioInput.value.trim());
-    const passwordValida = this.contieneLetraONumero.test(this.passwordInput.value.trim());
+    const usuarioValido = this.usuarioInput ? this.contieneLetraONumero.test(this.usuarioInput.value.trim()) : true;
+    const passwordValida = this.passwordInput ? this.contieneLetraONumero.test(this.passwordInput.value.trim()) : true;
+    const rolValido = this.rolSelect ? (this.rolSelect.value.trim() !== '') : true;
     const captchaValido = typeof grecaptcha !== 'undefined' && grecaptcha.getResponse().length > 0;
 
-    this.btnSubmit.disabled = !(usuarioValido && passwordValida && captchaValido);
+    if (this.btnSubmit) {
+      this.btnSubmit.disabled = !(usuarioValido && passwordValida && rolValido && captchaValido);
+    }
   }
 
   onRecaptchaSuccess() {
@@ -24,20 +27,34 @@ class ValidadorDatos {
   }
 
   onRecaptchaExpired() {
-    this.btnSubmit.disabled = true;
+    if (this.btnSubmit) {
+      this.btnSubmit.disabled = true;
+    }
   }
 
   iniciarEventos() {
-    this.usuarioInput.addEventListener('input', () => this.validarCampos());
-    this.passwordInput.addEventListener('input', () => this.validarCampos());
+    if (this.usuarioInput) {
+      this.usuarioInput.addEventListener('input', () => this.validarCampos());
+    }
+    if (this.passwordInput) {
+      this.passwordInput.addEventListener('input', () => this.validarCampos());
+    }
+    if (this.rolSelect) {
+      this.rolSelect.addEventListener('change', () => this.validarCampos());
+    }
 
     if (this.form) {
       this.form.addEventListener('submit', (event) => {
+        const usuarioValido = this.usuarioInput ? this.contieneLetraONumero.test(this.usuarioInput.value.trim()) : true;
+        const passwordValida = this.passwordInput ? this.contieneLetraONumero.test(this.passwordInput.value.trim()) : true;
+        const rolValido = this.rolSelect ? (this.rolSelect.value.trim() !== '') : true;
         const captchaValido = typeof grecaptcha !== 'undefined' && grecaptcha.getResponse().length > 0;
 
-        if (!captchaValido) {
+        if (!usuarioValido || !passwordValida || !rolValido || !captchaValido) {
           event.preventDefault();
-          this.btnSubmit.disabled = true;
+          if (this.btnSubmit) {
+            this.btnSubmit.disabled = true;
+          }
           return;
         }
       });
@@ -47,7 +64,6 @@ class ValidadorDatos {
     window.onRecaptchaExpired = () => this.onRecaptchaExpired();
   }
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('form');

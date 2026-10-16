@@ -54,6 +54,9 @@ class Usuario
         return $fila;
     }
 
+    /** Roles permitidos en el registro de usuarios. */
+    public const ROLES_REGISTRO = ['lector', 'bibliotecario'];
+
     /**
      * Comprueba si ya existe un nombre de usuario (útil para altas de usuarios).
      */
@@ -64,5 +67,39 @@ class Usuario
         $sentencia->execute();
 
         return $sentencia->fetchColumn() !== false;
+    }
+
+    /**
+     * Registra un nuevo usuario en la base de datos con la contraseña hasheada (bcrypt).
+     *
+     * @param string $usuario  Nombre de usuario.
+     * @param string $password Contraseña en texto plano.
+     * @param string $rol      Rol ('lector' o 'bibliotecario').
+     * @return int ID del nuevo usuario insertado.
+     * @throws InvalidArgumentException Si el rol no es válido.
+     * @throws RuntimeException Si el usuario ya existe.
+     */
+    public function registrar(string $usuario, string $password, string $rol = 'lector'): int
+    {
+        if (!in_array($rol, self::ROLES_REGISTRO, true)) {
+            throw new InvalidArgumentException("El rol '{$rol}' no está permitido.");
+        }
+
+        if ($this->existeUsuario($usuario)) {
+            throw new RuntimeException('El nombre de usuario ya se encuentra registrado.');
+        }
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+
+        $sql = 'INSERT INTO usuarios (usuario, password, rol, activo)
+                VALUES (:usuario, :password, :rol, 1)';
+
+        $sentencia = $this->pdo->prepare($sql);
+        $sentencia->bindValue(':usuario',  $usuario, PDO::PARAM_STR);
+        $sentencia->bindValue(':password', $hash,    PDO::PARAM_STR);
+        $sentencia->bindValue(':rol',      $rol,     PDO::PARAM_STR);
+        $sentencia->execute();
+
+        return (int) $this->pdo->lastInsertId();
     }
 }
