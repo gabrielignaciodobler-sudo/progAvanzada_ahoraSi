@@ -1,19 +1,6 @@
 <?php
-/**
- * ============================================================================
- *  app/Modelos/Libro.php
- *  Modelo de acceso a datos del "Producto" del ABM (tabla `productos`).
- *  En este sistema el producto es un LIBRO.
- *
- *  Implementa el ABM completo:
- *      - Alta (crear)
- *      - Baja LÓGICA (eliminar / restaurar)
- *      - Modificación (actualizar)
- *      - Lectura (listar / buscarPorId)
- *
- *  Todas las consultas usan SENTENCIAS PREPARADAS con parámetros.
- * ============================================================================
- */
+
+// Modelo de acceso a datos del "Producto" del ABM (tabla `productos`)
 
 declare(strict_types=1);
 
@@ -21,7 +8,7 @@ class Libro
 {
     private PDO $pdo;
 
-    /** Categorías permitidas en el ABM. */
+    /* Categorías permitidas en el ABM */
     public const CATEGORIAS = ['Novela', 'Cuentos', 'Poesía', 'Ensayo', 'Académico', 'Infantil'];
 
     public function __construct(PDO $pdo)
@@ -29,15 +16,8 @@ class Libro
         $this->pdo = $pdo;
     }
 
-    /* -----------------------------------------------------------------------
-     * LECTURA (Read)
-     * --------------------------------------------------------------------- */
-
-    /**
-     * Lista los libros. Por defecto solo los activos (no dados de baja).
-     *
-     * @return array<int,array<string,mixed>>
-     */
+    // Lista los libros. Por defecto solo los activos (no dados de baja)
+  
     public function listar(bool $incluirInactivos = false, string $busqueda = ''): array
     {
         $sql = 'SELECT id, nombre, autor, descripcion, precio, stock, categoria, activo, creado_en
@@ -51,9 +31,10 @@ class Libro
         }
 
         if ($busqueda !== '') {
-            // Busca por título o autor. Se usan DOS parámetros distintos porque
-            // las sentencias preparadas nativas de MySQL no permiten reutilizar
-            // el mismo marcador (:param) más de una vez.
+
+            /* Busca por título o autor. Se usan DOS parámetros distintos porque
+             las sentencias preparadas nativas de MySQL no permiten reutilizar
+             el mismo marcador (:param) más de una vez */
             $condiciones[] = '(nombre LIKE :busqueda_nombre OR autor LIKE :busqueda_autor)';
             $parametros[':busqueda_nombre'] = '%' . $busqueda . '%';
             $parametros[':busqueda_autor']  = '%' . $busqueda . '%';
@@ -74,11 +55,8 @@ class Libro
         return $sentencia->fetchAll();
     }
 
-    /**
-     * Obtiene un libro por su ID (activo o no).
-     *
-     * @return array<string,mixed>|null
-     */
+    // Obtiene un libro por su ID (activo o no)
+ 
     public function buscarPorId(int $id): ?array
     {
         $sentencia = $this->pdo->prepare(
@@ -95,15 +73,8 @@ class Libro
         return $fila === false ? null : $fila;
     }
 
-    /* -----------------------------------------------------------------------
-     * ALTA (Create)
-     * --------------------------------------------------------------------- */
-
-    /**
-     * Inserta un nuevo libro y devuelve el ID generado.
-     *
-     * @param array<string,mixed> $datos
-     */
+    // Inserta un nuevo libro y devuelve el ID generado
+    
     public function crear(array $datos): int
     {
         $sql = 'INSERT INTO productos (nombre, autor, descripcion, precio, stock, categoria)
@@ -121,15 +92,8 @@ class Libro
         return (int) $this->pdo->lastInsertId();
     }
 
-    /* -----------------------------------------------------------------------
-     * MODIFICACIÓN (Update)
-     * --------------------------------------------------------------------- */
-
-    /**
-     * Actualiza un libro existente. Devuelve true si modificó alguna fila.
-     *
-     * @param array<string,mixed> $datos
-     */
+    // Actualiza un libro existente, devuelve true si modificó alguna fila
+ 
     public function actualizar(int $id, array $datos): bool
     {
         $sql = 'UPDATE productos
@@ -154,14 +118,9 @@ class Libro
         return $sentencia->rowCount() >= 0; // rowCount 0 puede significar "sin cambios"
     }
 
-    /* -----------------------------------------------------------------------
-     * BAJA (Delete)
-     * --------------------------------------------------------------------- */
+    /* Baja LÓGICA: marca el libro como inactivo (activo = 0)
+     Se conserva el registro histórico en la base de datos */
 
-    /**
-     * Baja LÓGICA: marca el libro como inactivo (activo = 0).
-     * Se conserva el registro histórico en la base de datos.
-     */
     public function eliminar(int $id): bool
     {
         $sentencia = $this->pdo->prepare('UPDATE productos SET activo = 0 WHERE id = :id');
@@ -171,9 +130,8 @@ class Libro
         return $sentencia->rowCount() > 0;
     }
 
-    /**
-     * Reactiva un libro dado de baja (activo = 1).
-     */
+    // Reactiva un libro dado de baja (activo = 1)
+
     public function restaurar(int $id): bool
     {
         $sentencia = $this->pdo->prepare('UPDATE productos SET activo = 1 WHERE id = :id');
@@ -183,16 +141,10 @@ class Libro
         return $sentencia->rowCount() > 0;
     }
 
-    /* -----------------------------------------------------------------------
-     * VALIDACIÓN de los datos de entrada (reglas de negocio)
-     * --------------------------------------------------------------------- */
-
-    /**
-     * Devuelve un arreglo de errores (vacío si todo es válido).
-     *
-     * @param array<string,mixed> $datos
-     * @return array<string,string>
-     */
+    // Validacion de los datos de entrada
+  
+    // Devuelve un arreglo de errores (vacío si todo es válido)
+ 
     public static function validar(array $datos): array
     {
         $errores = [];
@@ -229,13 +181,9 @@ class Libro
         return $errores;
     }
 
-    /**
-     * Normaliza/limpia los datos recibidos del formulario antes de persistir.
-     *
-     * @param array<string,mixed> $datos
-     * @return array<string,mixed>
-     */
-    public static function normalizar(array $datos): array
+    // Normaliza/limpia los datos recibidos del formulario antes de persistir
+
+  static function normalizar(array $datos): array
     {
         return [
             'nombre'      => trim((string) ($datos['nombre'] ?? '')),

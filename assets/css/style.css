@@ -334,7 +334,6 @@ main {
   flex-shrink: 0;
 }
 
-/* fila central: silueta — ficha — silueta */
 .login-area {
   display: flex;
   align-items: center;
@@ -673,8 +672,6 @@ form button:disabled {
   transform: translateY(-14px) scale(0.98);
 }
 
-/* pantalla ficticia post login */
-
 .panel-premium {
   position: relative;
   width: 100%;
@@ -932,20 +929,11 @@ footer p {
   }
 }
 
-
-/* ==========================================================================
-   TERCERA ENTREGA - ABM de libros, pantalla de error y ajustes de inicio
-   ========================================================================== */
-
-/* La bienvenida del inicio ahora apila texto y botón en vertical. */
 .home-hero {
   flex-direction: column;
   gap: 1.75rem;
 }
 
-/* --------------------------------------------------------------------------
-   Pantalla amigable de error de conexión
-   -------------------------------------------------------------------------- */
 .ficha-resultado--error {
   background: linear-gradient(135deg, #efe4e4 0%, #e2d2d2 100%);
   border-color: var(--vino);
@@ -963,9 +951,6 @@ footer p {
   color: #6b5b4a !important;
 }
 
-/* --------------------------------------------------------------------------
-   Contenedor general del ABM
-   -------------------------------------------------------------------------- */
 .abm {
   width: min(100%, 1000px);
   display: flex;
@@ -1016,7 +1001,6 @@ footer p {
   border-radius: 8px;
 }
 
-/* Mensajes flash (éxito / error) */
 .mensaje {
   margin: 0;
   padding: 0.85rem 1.1rem;
@@ -1037,9 +1021,6 @@ footer p {
   color: #ffe2e2;
 }
 
-/* --------------------------------------------------------------------------
-   Buscador / filtros del listado
-   -------------------------------------------------------------------------- */
 .abm .abm__filtros {
   display: flex;
   flex-direction: row;
@@ -1107,9 +1088,6 @@ footer p {
   padding: 0.15rem 0.3rem;
 }
 
-/* --------------------------------------------------------------------------
-   Tabla del listado
-   -------------------------------------------------------------------------- */
 .tabla-scroll {
   overflow-x: auto;
   border: 1px solid var(--dorado);
@@ -1170,7 +1148,6 @@ footer p {
   text-decoration: line-through;
 }
 
-/* Etiquetas de estado */
 .etiqueta {
   display: inline-block;
   padding: 0.15rem 0.6rem;
@@ -1194,7 +1171,6 @@ footer p {
   border: 1px solid #c99b9b;
 }
 
-/* Acciones de fila */
 .acciones {
   display: flex;
   justify-content: flex-end;
@@ -1264,9 +1240,6 @@ form .btn-accion {
   background: #24543e;
 }
 
-/* --------------------------------------------------------------------------
-   Formulario de alta / modificación
-   -------------------------------------------------------------------------- */
 .abm .form-abm {
   width: 100%;
   max-width: none;

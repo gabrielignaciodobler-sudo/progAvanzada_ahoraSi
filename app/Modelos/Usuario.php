@@ -1,12 +1,6 @@
 <?php
-/**
- * ============================================================================
- *  app/Modelos/Usuario.php
- *  Modelo de acceso a datos para la autenticación (tabla `usuarios`).
- *  Todas las consultas son PREPARADAS (parametrizadas) para evitar
- *  Inyección SQL.
- * ============================================================================
- */
+
+// Modelo de acceso a datos para la autenticación (tabla `usuarios`).
 
 declare(strict_types=1);
 
@@ -19,12 +13,8 @@ class Usuario
         $this->pdo = $pdo;
     }
 
-    /**
-     * Valida las credenciales contra la base de datos.
-     *
-     * @return array<string,mixed>|null Datos del usuario (sin el hash) si las
-     *                                  credenciales son correctas; null en caso contrario.
-     */
+    // Valida las credenciales contra la base de datos.
+
     public function validarCredenciales(string $usuario, string $password): ?array
     {
         $sql = 'SELECT id, usuario, password, rol, activo
@@ -38,29 +28,32 @@ class Usuario
 
         $fila = $sentencia->fetch();
 
-        // Usuario inexistente o inactivo.
+        // Usuario inexistente o inactivo
+
         if ($fila === false || (int) $fila['activo'] !== 1) {
             return null;
         }
 
-        // Verificación del hash bcrypt almacenado.
+        // Verificación del hash bcrypt almacenado
+
         if (!password_verify($password, (string) $fila['password'])) {
             return null;
         }
 
-        // Nunca propagar el hash fuera del modelo.
+        // Nunca propagar el hash fuera del modelo
+
         unset($fila['password']);
 
         return $fila;
     }
 
-    /** El registro público solo puede crear cuentas lectoras. */
+    // El registro público solo puede crear cuentas lectoras
+
     public const ROLES_REGISTRO = ['lector'];
     public const ROLES_CUENTA = ['admin', 'bibliotecario', 'lector'];
 
-    /**
-     * Comprueba si ya existe un nombre de usuario (útil para altas de usuarios).
-     */
+    // Comprueba si ya existe un nombre de usuario (para altas de usuarios)
+
     public function existeUsuario(string $usuario, int $excluirId = 0): bool
     {
         $sql = 'SELECT 1 FROM usuarios WHERE usuario = :usuario';
@@ -79,11 +72,8 @@ class Usuario
         return $sentencia->fetchColumn() !== false;
     }
 
-    /**
-     * Lista cuentas sin exponer sus hashes de contraseña.
-     *
-     * @return array<int,array<string,mixed>>
-     */
+    // Lista cuentas sin exponer sus hashes de contraseña
+
     public function listarCuentas(): array
     {
         $sentencia = $this->pdo->query(
@@ -95,11 +85,6 @@ class Usuario
         return $sentencia->fetchAll();
     }
 
-    /**
-     * Busca una cuenta sin exponer su hash de contraseña.
-     *
-     * @return array<string,mixed>|null
-     */
     public function buscarCuentaPorId(int $id): ?array
     {
         $sentencia = $this->pdo->prepare(
@@ -116,7 +101,8 @@ class Usuario
         return $fila === false ? null : $fila;
     }
 
-    /** Crea una cuenta desde el panel administrativo. */
+    // Crea una cuenta desde el panel administrativo
+
     public function crearCuenta(string $usuario, string $password, string $rol): int
     {
         if (!in_array($rol, self::ROLES_CUENTA, true)) {
@@ -135,11 +121,10 @@ class Usuario
         return (int) $this->pdo->lastInsertId();
     }
 
-    /**
-     * Actualiza datos de cuenta y cambia la contraseña solo si se indicó una.
-     *
-     * @throws DomainException si la modificación desactivaría al último administrador activo.
-     */
+    // Actualiza datos de cuenta y cambia la contraseña solo si se indicó una
+   
+    //throw DomainException si se intenta quitar el rol de administrador a la última cuenta administradora activa
+
     public function actualizarCuenta(int $id, string $usuario, string $password, string $rol): bool
     {
         if (!in_array($rol, self::ROLES_CUENTA, true)) {
@@ -187,11 +172,10 @@ class Usuario
         }
     }
 
-    /**
-     * Activa o desactiva una cuenta preservando la última cuenta administradora activa.
-     *
-     * @throws DomainException si se intenta desactivar al último administrador activo.
-     */
+    // Activa o desactiva una cuenta preservando la última cuenta administradora activa
+
+    //throw DomainException si se intenta desactivar a la última cuenta administradora activa
+
     public function establecerCuentaActiva(int $id, bool $activa): bool
     {
         $this->pdo->beginTransaction();
@@ -225,11 +209,8 @@ class Usuario
         }
     }
 
-    /**
-     * Bloquea las filas administradoras activas para serializar cambios de rol y estado.
-     *
-     * @return array<int,array<string,mixed>>
-     */
+    // Bloquea las filas administradoras activas para serializar cambios de rol y estado
+
     private function bloquearAdministradoresActivos(): array
     {
         $sentencia = $this->pdo->query(
@@ -239,7 +220,8 @@ class Usuario
         return $sentencia->fetchAll();
     }
 
-    /** @return array<string,mixed>|null */
+    // Busca una cuenta por su ID, bloqueando la fila para serializar cambios
+
     private function buscarCuentaPorIdBloqueada(int $id): ?array
     {
         $sentencia = $this->pdo->prepare(
@@ -257,16 +239,8 @@ class Usuario
         return $fila === false ? null : $fila;
     }
 
-    /**
-     * Registra un nuevo usuario en la base de datos con la contraseña hasheada (bcrypt).
-     *
-     * @param string $usuario  Nombre de usuario.
-     * @param string $password Contraseña en texto plano.
-     * @param string $rol      Rol ('lector' o 'bibliotecario').
-     * @return int ID del nuevo usuario insertado.
-     * @throws InvalidArgumentException Si el rol no es válido.
-     * @throws RuntimeException Si el usuario ya existe.
-     */
+    // Registra un nuevo usuario en la base de datos con la contraseña hasheada (bcrypt)
+
     public function registrar(string $usuario, string $password, string $rol = 'lector'): int
     {
         if (!in_array($rol, self::ROLES_REGISTRO, true)) {

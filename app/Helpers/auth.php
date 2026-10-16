@@ -1,15 +1,9 @@
 <?php
-/**
- * ============================================================================
- *  app/Helpers/auth.php
- *  Utilidades de sesión, control de acceso, CSRF y mensajes flash.
- *  Separa la "seguridad de sesión" de la lógica de negocio.
- * ============================================================================
- */
+ /* Utilidades de sesión, control de acceso, CSRF y mensajes flash
+ Separa la "seguridad de sesión" de la lógica de negocio */
 
 declare(strict_types=1);
 
-/** Inicia la sesión si aún no está iniciada. */
 function iniciarSesion(): void
 {
     if (session_status() === PHP_SESSION_NONE) {
@@ -17,7 +11,6 @@ function iniciarSesion(): void
     }
 }
 
-/** Indica si hay un usuario autenticado. */
 function usuarioLogueado(): bool
 {
     iniciarSesion();
@@ -25,7 +18,7 @@ function usuarioLogueado(): bool
     return !empty($_SESSION['logueado']) && $_SESSION['logueado'] === true;
 }
 
-/** Exige sesión activa; si no hay, redirige al login y detiene la ejecución. */
+// Exige sesión activa; si no hay, redirige al login y detiene la ejecución
 function requerirLogin(): void
 {
     if (!usuarioLogueado()) {
@@ -56,7 +49,6 @@ function requerirLogin(): void
     $_SESSION['rol'] = (string) $usuario['rol'];
 }
 
-/** Nombre del usuario en sesión. */
 function usuarioActual(): string
 {
     iniciarSesion();
@@ -64,7 +56,6 @@ function usuarioActual(): string
     return (string) ($_SESSION['usuario'] ?? 'usuario');
 }
 
-/** Rol del usuario en sesión (null si no está definido). */
 function rolActual(): ?string
 {
     iniciarSesion();
@@ -72,17 +63,13 @@ function rolActual(): ?string
     return isset($_SESSION['rol']) ? (string) $_SESSION['rol'] : null;
 }
 
-/** Devuelve el rol actual con la primera letra en mayúscula para mostrarlo. */
 function rolActualPresentable(): string
 {
     return ucfirst(rolActual() ?? 'lector');
 }
 
-/**
- * Determina si el usuario logueado tiene permisos de ABM sobre libros.
- * Los roles con permisos son 'admin' y 'bibliotecario'.
- * El rol 'lector' NO tiene permisos de ABM (solo lectura).
- */
+// Determina si el usuario logueado tiene permisos de ABM sobre libros.
+
 function puedeGestionarLibros(): bool
 {
     $rol = rolActual();
@@ -90,10 +77,9 @@ function puedeGestionarLibros(): bool
     return $rol === 'admin' || $rol === 'bibliotecario';
 }
 
-/**
- * Exige permisos de ABM. Si el usuario no tiene permisos (por ejemplo, 'lector'),
- * se cancela la operación y se redirige al catálogo con un mensaje explicativo.
- */
+ /* Exige permisos de ABM. Si no tiene, se cancela la operación
+  y se redirige al catálogo con un mensaje explicativo */
+
 function requerirPermisoGestion(): void
 {
     requerirLogin();
@@ -105,7 +91,6 @@ function requerirPermisoGestion(): void
     }
 }
 
-/** Exige el rol administrador para gestionar cuentas. */
 function requerirAdmin(): void
 {
     requerirLogin();
@@ -117,17 +102,16 @@ function requerirAdmin(): void
     }
 }
 
-/** Escapa texto para mostrarlo de forma segura en HTML. */
+// Escapa texto para mostrarlo de forma segura en HTML
 function escapar(?string $texto): string
 {
     return htmlspecialchars((string) $texto, ENT_QUOTES, 'UTF-8');
 }
 
-/* ---------------------------------------------------------------------------
- * CSRF: protege los formularios del ABM contra envíos falsificados.
- * ------------------------------------------------------------------------- */
+// CSRF: protege los formularios del ABM contra envíos falsificados.
 
-/** Devuelve (creando si hace falta) el token CSRF de la sesión. */
+// Devuelve (creando si hace falta) el token CSRF de la sesión
+
 function tokenCsrf(): string
 {
     iniciarSesion();
@@ -139,13 +123,13 @@ function tokenCsrf(): string
     return (string) $_SESSION['csrf_token'];
 }
 
-/** Genera el input oculto con el token CSRF listo para insertar en el <form>. */
+// Genera el input oculto con el token CSRF listo para insertar en el <form>
 function campoCsrf(): string
 {
     return '<input type="hidden" name="csrf_token" value="' . escapar(tokenCsrf()) . '">';
 }
 
-/** Corta la ejecución si el token CSRF recibido no es válido. */
+// Corta la ejecución si el token CSRF recibido no es válido
 function validarCsrf(): void
 {
     iniciarSesion();
@@ -159,22 +143,18 @@ function validarCsrf(): void
     }
 }
 
-/* ---------------------------------------------------------------------------
- * Mensajes flash (se muestran una sola vez tras una redirección).
- * ------------------------------------------------------------------------- */
+// Mensajes flash (se muestran una sola vez tras una redirección)
 
-/**
- * Guarda un mensaje flash para el siguiente request.
- *
- * @param string $tipo 'exito' | 'error'
- */
+// Guarda un mensaje flash para el siguiente request
+
 function setFlash(string $tipo, string $mensaje): void
 {
     iniciarSesion();
     $_SESSION['flash'] = ['tipo' => $tipo, 'mensaje' => $mensaje];
 }
 
-/** Recupera y elimina el mensaje flash pendiente. */
+// Recupera y elimina el mensaje flash pendiente.
+
 function tomarFlash(): ?array
 {
     iniciarSesion();

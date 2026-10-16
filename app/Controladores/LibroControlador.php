@@ -1,18 +1,14 @@
 <?php
-/**
- * ============================================================================
- *  app/Controladores/LibroControlador.php
- *  Controlador del ABM completo de Libros (tabla `productos`).
- * ============================================================================
- */
+
+// Controlador del ABM completo de Libros (tabla `productos`).
 
 declare(strict_types=1);
 
 class LibroControlador extends Controlador
 {
-    /**
-     * Catálogo / listado de libros con buscador y filtro de inactivos.
-     */
+
+    // Catálogo / listado de libros con buscador y filtro de inactivos.
+
     public function index(): void
     {
         requerirLogin();
@@ -44,9 +40,8 @@ class LibroControlador extends Controlador
         ]);
     }
 
-    /**
-     * Muestra la ficha completa de un libro del catálogo.
-     */
+    // Muestra la ficha completa de un libro del catálogo.
+
     public function detalle(): void
     {
         requerirLogin();
@@ -88,9 +83,8 @@ class LibroControlador extends Controlador
         ]);
     }
 
-    /**
-     * Muestra el formulario para dar de alta un nuevo libro.
-     */
+    // Muestra el formulario para dar de alta un nuevo libro.
+
     public function crear(): void
     {
         requerirLogin();
@@ -119,9 +113,8 @@ class LibroControlador extends Controlador
         ]);
     }
 
-    /**
-     * Muestra el formulario para editar un libro existente.
-     */
+    //Muestra el formulario para editar un libro existente.
+
     public function editar(): void
     {
         requerirLogin();
@@ -182,9 +175,8 @@ class LibroControlador extends Controlador
         ]);
     }
 
-    /**
-     * Procesa la inserción o actualización de un libro (POST).
-     */
+    // Procesa la inserción o actualización de un libro (POST).
+
     public function guardar(): void
     {
         requerirLogin();
@@ -238,9 +230,9 @@ class LibroControlador extends Controlador
         $this->redirigir('index.php?c=libro&a=index');
     }
 
-    /**
-     * Procesa la baja lógica o reactivación de un libro (POST).
-     */
+    
+    // Procesa la baja lógica o reactivación de un libro (POST).
+
     public function eliminar(): void
     {
         requerirLogin();

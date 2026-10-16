@@ -1,18 +1,12 @@
 <?php
-/**
- * ============================================================================
- *  app/Controladores/HomeControlador.php
- *  Controlador para las pantallas de bienvenida y panel principal.
- * ============================================================================
- */
+
+// Controlador para las pantallas de bienvenida y panel principal.
 
 declare(strict_types=1);
 
 class HomeControlador extends Controlador
 {
-    /**
-     * Portada pública de la biblioteca.
-     */
+    // Portada pública de la biblioteca.
     public function index(): void
     {
         if (usuarioLogueado()) {
@@ -22,9 +16,7 @@ class HomeControlador extends Controlador
         $this->renderizar('home/index');
     }
 
-    /**
-     * Panel inicial tras haber iniciado sesión.
-     */
+    // Panel inicial tras haber iniciado sesión. 
     public function inicio(): void
     {
         requerirLogin();

@@ -1,10 +1,6 @@
 <?php
-/**
- * ============================================================================
- *  app/Controladores/UsuarioControlador.php
- *  ABM administrativo de cuentas de usuario.
- * ============================================================================
- */
+
+// ABM administrativo de cuentas de usuario.
 
 declare(strict_types=1);
 
@@ -227,10 +223,6 @@ class UsuarioControlador extends Controlador
         $this->redirigir('index.php?c=usuario');
     }
 
-    /**
-     * @param array<string,mixed> $usuario
-     * @param array<string,string> $errores
-     */
     private function renderizarFormulario(array $usuario, bool $esEdicion, array $errores): void
     {
         $this->renderizar('usuarios/formulario', [
@@ -240,10 +232,6 @@ class UsuarioControlador extends Controlador
         ]);
     }
 
-    /**
-     * @param array<string,string> $datos
-     * @param array<string,string> $errores
-     */
     private function guardarErroresFormulario(array $datos, array $errores, int $id): void
     {
         $_SESSION['usuario_form_datos'] = $datos;

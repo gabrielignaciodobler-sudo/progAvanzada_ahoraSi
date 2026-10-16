@@ -1,11 +1,7 @@
 <?php
-/**
- * ============================================================================
- *  index.php - Front Controller / Enrutador Principal
- *  Punto de entrada único de la aplicación bajo el patrón MVC.
- *  Recibe los parámetros `c` (controlador) y `a` (acción) por querystring.
- * ============================================================================
- */
+
+/* Punto de entrada único de la aplicación bajo el patrón MVC.
+ Recibe los parámetros `c` (controlador) y `a` (acción) por querystring */
 
 declare(strict_types=1);
 
@@ -26,10 +22,12 @@ require_once __DIR__ . '/app/Helpers/auth.php';
 iniciarSesion();
 
 // Resolución de controlador y acción con valores por defecto
+
 $controladorNombre = strtolower((string) ($_GET['c'] ?? $_GET['controlador'] ?? 'home'));
 $accionNombre      = (string) ($_GET['a'] ?? $_GET['accion'] ?? '');
 
 // Mapa de controladores disponibles
+
 $controladores = [
     'home'   => 'HomeControlador',
     'auth'   => 'AuthControlador',
@@ -50,10 +48,10 @@ if (!class_exists($claseControlador)) {
     die("Error 500: No se encuentra el archivo del controlador «{$claseControlador}».");
 }
 
-/** @var object $instancia */
 $instancia = new $claseControlador();
 
 // Si no se especificó acción, resolvemos la acción predeterminada según el controlador
+
 if ($accionNombre === '') {
     if ($controladorNombre === 'auth') {
         $accionNombre = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' ? 'login' : 'mostrarLogin';
@@ -63,6 +61,7 @@ if ($accionNombre === '') {
 }
 
 // Mapeos intuitivos de acciones (alias amigables)
+
 $aliasAcciones = [
     'mostrarlogin'    => 'mostrarLogin',
     'login'           => ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' ? 'login' : 'mostrarLogin',
@@ -78,4 +77,5 @@ if (!method_exists($instancia, $accionMetodo) || !is_callable([$instancia, $acci
 }
 
 // Ejecución del controlador y acción
+
 $instancia->$accionMetodo();

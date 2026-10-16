@@ -1,28 +1,11 @@
 <?php
-/**
- * ============================================================================
- *  config/database.php
- *  Módulo de conexión al SGBD (MySQL / MariaDB) mediante PDO.
- *
- *  Responsabilidades:
- *    - Centralizar los parámetros de conexión.
- *    - Entregar una única conexión (patrón singleton por request).
- *    - Capturar cualquier fallo (servidor caído, credenciales mal,
- *      puerto bloqueado, base inexistente, etc.) y responder con un
- *      mensaje AMIGABLE, sin dejar que la excepción no controlada
- *      tumbe la aplicación.
- * ============================================================================
- */
+
+// Módulo de conexión al SGBD (MySQL / MariaDB) mediante PDO.
 
 declare(strict_types=1);
 
-/* --------------------------------------------------------------------------
- * Parámetros de conexión (ajustar según el entorno).
- * Se pueden sobrescribir con variables de entorno (útil para pruebas),
- * por ejemplo: DB_PORT=3399 php ...
- * -------------------------------------------------------------------------- */
+// Devuelve una variable de entorno o el valor por defecto indicado
 
-/** Devuelve una variable de entorno o el valor por defecto indicado. */
 function parametroBD(string $nombre, string $porDefecto): string
 {
     $valor = getenv($nombre);
@@ -37,24 +20,19 @@ define('DB_USER', parametroBD('DB_USER', 'root'));
 define('DB_PASS', parametroBD('DB_PASS', ''));      // XAMPP: root sin contraseña
 define('DB_CHARSET', parametroBD('DB_CHARSET', 'utf8mb4'));
 
-/* Mensaje único y amigable mostrado ante cualquier problema de conexión. */
 const MENSAJE_ERROR_CONEXION =
     'No se pudo establecer conexión con el servidor de datos. '
     . 'Por favor, reintente más tarde o contacte al administrador.';
 
-/**
- * Excepción de dominio para diferenciar los errores de CONEXIÓN
- * de los errores de CONSULTA (PDOException).
- */
+/* Excepción de dominio para diferenciar los errores de CONEXIÓN
+ de los errores de CONSULTA (PDOException) */
+
 class ConexionBDException extends RuntimeException
 {
 }
 
-/**
- * Devuelve una conexión PDO reutilizable durante todo el request.
- *
- * @throws ConexionBDException si no se puede conectar al SGBD.
- */
+// Devuelve una conexión PDO reutilizable durante todo el request.
+
 function obtenerConexion(): PDO
 {
     static $pdo = null;
@@ -75,22 +53,19 @@ function obtenerConexion(): PDO
         $pdo = new PDO($dsn, DB_USER, DB_PASS, [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false, // consultas preparadas reales
+            PDO::ATTR_EMULATE_PREPARES   => false,
         ]);
     } catch (PDOException $e) {
-        // Se registra el detalle técnico SOLO en el log del servidor.
         error_log('[BD] Error de conexión: ' . $e->getMessage());
-        // Al usuario se le entrega un mensaje genérico y amigable.
         throw new ConexionBDException(MENSAJE_ERROR_CONEXION, 0, $e);
     }
 
     return $pdo;
 }
 
-/**
- * Atajo usado por las páginas: obtiene la conexión o, si falla,
- * muestra la pantalla de error amigable y detiene la ejecución.
- */
+/* Atajo usado por las páginas: obtiene la conexión o, si falla,
+ muestra la pantalla de error y detiene la ejecución */
+
 function conectarBD(): PDO
 {
     try {
@@ -99,16 +74,12 @@ function conectarBD(): PDO
         mostrarErrorConexion();
     }
 
-    // mostrarErrorConexion() termina con exit(); esta línea es inalcanzable,
-    // pero mantiene conforme al analizador estático.
+    /* mostrarErrorConexion() termina con exit(); esta línea es inalcanzable,
+    pero mantiene conforme al analizador estático */
+    
     exit;
 }
 
-/**
- * Renderiza una pantalla de error amigable (HTTP 503) reutilizando
- * el encabezado, pie y hoja de estilos del sitio. Nunca expone
- * detalles técnicos al usuario final.
- */
 function mostrarErrorConexion(): void
 {
     if (session_status() === PHP_SESSION_NONE) {
@@ -124,6 +95,7 @@ function mostrarErrorConexion(): void
     $raiz = dirname(__DIR__);
     $versionCss = is_file($raiz . '/assets/css/style.css') ? filemtime($raiz . '/assets/css/style.css') : time();
     ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
