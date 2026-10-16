@@ -32,6 +32,28 @@ function requerirLogin(): void
         header('Location: index.php?c=auth&a=login');
         exit;
     }
+
+    try {
+        $usuario = (new Usuario(obtenerConexion()))->buscarCuentaPorId(
+            (int) ($_SESSION['usuario_id'] ?? 0)
+        );
+    } catch (ConexionBDException $e) {
+        mostrarErrorConexion();
+    } catch (PDOException $e) {
+        error_log('[Autenticación] Error al validar la sesión: ' . $e->getMessage());
+        mostrarErrorConexion();
+    }
+
+    if ($usuario === null || (int) $usuario['activo'] !== 1) {
+        $_SESSION = [];
+        session_regenerate_id(true);
+        setFlash('error', 'Tu cuenta ya no está activa. Iniciá sesión nuevamente.');
+        header('Location: index.php?c=auth&a=login');
+        exit;
+    }
+
+    $_SESSION['usuario'] = (string) $usuario['usuario'];
+    $_SESSION['rol'] = (string) $usuario['rol'];
 }
 
 /** Nombre del usuario en sesión. */
@@ -73,6 +95,18 @@ function requerirPermisoGestion(): void
     if (!puedeGestionarLibros()) {
         setFlash('error', 'Acceso denegado: tu rol de «' . escapar(rolActual() ?? 'desconocido') . '» no tiene permisos para realizar altas, bajas o modificaciones de libros.');
         header('Location: index.php?c=libro&a=index');
+        exit;
+    }
+}
+
+/** Exige el rol administrador para gestionar cuentas. */
+function requerirAdmin(): void
+{
+    requerirLogin();
+
+    if (rolActual() !== 'admin') {
+        setFlash('error', 'Acceso denegado: solo un administrador puede gestionar cuentas de usuario.');
+        header('Location: index.php?c=home');
         exit;
     }
 }

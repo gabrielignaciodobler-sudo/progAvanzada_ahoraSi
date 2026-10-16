@@ -1300,6 +1300,7 @@ form .btn-accion {
 
 .form-abm input[type="text"],
 .form-abm input[type="number"],
+.form-abm input[type="password"],
 .form-abm select,
 .form-abm textarea {
   width: 100%;

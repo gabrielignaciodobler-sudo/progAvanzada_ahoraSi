@@ -35,6 +35,8 @@ $controladores = [
     'auth'   => 'AuthControlador',
     'libro'  => 'LibroControlador',
     'libros' => 'LibroControlador',
+    'usuario' => 'UsuarioControlador',
+    'usuarios' => 'UsuarioControlador',
 ];
 
 if (!isset($controladores[$controladorNombre])) {
