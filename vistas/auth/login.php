@@ -6,7 +6,7 @@
   <title>Login - Biblioteca</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=<?php echo filemtime(dirname(__DIR__, 2) . '/css/style.css'); ?>">
+  <link rel="stylesheet" href="assets/css/style.css?v=<?php echo filemtime(dirname(__DIR__, 2) . '/assets/css/style.css'); ?>">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
@@ -75,8 +75,7 @@
 
 </main>
 
-<script src="js/scriptLogin.js" type="text/javascript"></script>
+<script src="assets/js/scriptLogin.js" type="text/javascript"></script>
 <?php include dirname(__DIR__) . '/layouts/footer.php'; ?>  
 </body>
 </html>
-

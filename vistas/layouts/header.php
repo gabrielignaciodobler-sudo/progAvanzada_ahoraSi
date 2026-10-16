@@ -1,6 +1,6 @@
 <header>
     <p>Sistema de gestión de biblioteca</p>
-    <img src="img/logo.png" class="img-fluid" alt="Escudo de la biblioteca">
+    <img src="assets/img/logo.png" class="img-fluid" alt="Escudo de la biblioteca">
     <?php if (usuarioLogueado()): ?>
         <div class="sesion-activa">
             <span>Logueado como <?php echo escapar(usuarioActual()); ?> (<?php echo escapar(rolActual() ?? 'lector'); ?>)</span>
@@ -10,4 +10,3 @@
     <?php endif; ?>
     <hr>
 </header>
-

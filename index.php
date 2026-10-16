@@ -9,8 +9,19 @@
 
 declare(strict_types=1);
 
+spl_autoload_register(static function (string $clase): void {
+    foreach ([__DIR__ . '/app/Controladores', __DIR__ . '/app/Modelos'] as $directorio) {
+        $archivo = $directorio . DIRECTORY_SEPARATOR . $clase . '.php';
+
+        if (is_file($archivo)) {
+            require_once $archivo;
+            return;
+        }
+    }
+});
+
 require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/php/auth.php';
+require_once __DIR__ . '/app/Helpers/auth.php';
 
 iniciarSesion();
 
@@ -32,14 +43,10 @@ if (!isset($controladores[$controladorNombre])) {
 }
 
 $claseControlador   = $controladores[$controladorNombre];
-$archivoControlador = __DIR__ . '/controladores/' . $claseControlador . '.php';
-
-if (!file_exists($archivoControlador)) {
+if (!class_exists($claseControlador)) {
     http_response_code(500);
     die("Error 500: No se encuentra el archivo del controlador «{$claseControlador}».");
 }
-
-require_once $archivoControlador;
 
 /** @var object $instancia */
 $instancia = new $claseControlador();

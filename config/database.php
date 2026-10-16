@@ -119,9 +119,9 @@ function mostrarErrorConexion(): void
         http_response_code(503);
     }
 
-    $css = '../css/style.css';
+    $css = 'assets/css/style.css';
     $raiz = dirname(__DIR__);
-    $versionCss = is_file($raiz . '/css/style.css') ? filemtime($raiz . '/css/style.css') : time();
+    $versionCss = is_file($raiz . '/assets/css/style.css') ? filemtime($raiz . '/assets/css/style.css') : time();
     ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -134,18 +134,18 @@ function mostrarErrorConexion(): void
   <link rel="stylesheet" href="<?php echo $css; ?>?v=<?php echo $versionCss; ?>">
 </head>
 <body class="auth-page">
-<?php include $raiz . '/php/header.php'; ?>
+<?php include $raiz . '/vistas/layouts/header.php'; ?>
 <main>
   <div class="resultado">
     <div class="ficha-resultado ficha-resultado--error">
       <span class="sello sello--error">Sin conexión</span>
       <p class="error-conexion__texto"><?php echo htmlspecialchars(MENSAJE_ERROR_CONEXION, ENT_QUOTES, 'UTF-8'); ?></p>
       <p class="error-conexion__codigo">Ref. HTTP 503 · Servicio de datos no disponible</p>
-      <a href="login.php" class="panel-premium__volver">Reintentar inicio de sesión</a>
+      <a href="index.php?c=auth&amp;a=login" class="panel-premium__volver">Reintentar inicio de sesión</a>
     </div>
   </div>
 </main>
-<?php include $raiz . '/php/footer.php'; ?>
+<?php include $raiz . '/vistas/layouts/footer.php'; ?>
 </body>
 </html>
     <?php
