@@ -72,6 +72,12 @@ function rolActual(): ?string
     return isset($_SESSION['rol']) ? (string) $_SESSION['rol'] : null;
 }
 
+/** Devuelve el rol actual con la primera letra en mayúscula para mostrarlo. */
+function rolActualPresentable(): string
+{
+    return ucfirst(rolActual() ?? 'lector');
+}
+
 /**
  * Determina si el usuario logueado tiene permisos de ABM sobre libros.
  * Los roles con permisos son 'admin' y 'bibliotecario'.

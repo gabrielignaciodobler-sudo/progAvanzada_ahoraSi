@@ -45,6 +45,50 @@ class LibroControlador extends Controlador
     }
 
     /**
+     * Muestra la ficha completa de un libro del catálogo.
+     */
+    public function detalle(): void
+    {
+        requerirLogin();
+
+        $id = (int) ($_GET['id'] ?? 0);
+        if ($id <= 0) {
+            setFlash('error', 'Identificador de libro inválido.');
+            $this->redirigir('index.php?c=libro&a=index');
+        }
+
+        try {
+            $libro = (new Libro(conectarBD()))->buscarPorId($id);
+        } catch (PDOException $e) {
+            error_log('[Libro detalle] Error de consulta: ' . $e->getMessage());
+            setFlash('error', MENSAJE_ERROR_CONEXION);
+            $this->redirigir('index.php?c=libro&a=index');
+        }
+
+        if ($libro === null || ((int) $libro['activo'] !== 1 && !puedeGestionarLibros())) {
+            setFlash('error', 'El libro solicitado no está disponible.');
+            $this->redirigir('index.php?c=libro&a=index');
+        }
+
+        $busqueda = trim((string) ($_GET['q'] ?? ''));
+        $incluirInactivos = puedeGestionarLibros()
+            && (($_GET['inactivos'] ?? '') === '1');
+        $parametrosRetorno = ['c' => 'libro', 'a' => 'index'];
+        if ($busqueda !== '') {
+            $parametrosRetorno['q'] = $busqueda;
+        }
+        if ($incluirInactivos) {
+            $parametrosRetorno['inactivos'] = '1';
+        }
+
+        $this->renderizar('libros/detalle', [
+            'libro' => $libro,
+            'puedeGestionar' => puedeGestionarLibros(),
+            'urlRetorno' => 'index.php?' . http_build_query($parametrosRetorno),
+        ]);
+    }
+
+    /**
      * Muestra el formulario para dar de alta un nuevo libro.
      */
     public function crear(): void

@@ -80,7 +80,11 @@
               <?php $activo = (int) $fila['activo'] === 1; ?>
               <tr class="<?php echo $activo ? '' : 'fila-inactiva'; ?>">
                 <td><?php echo (int) $fila['id']; ?></td>
-                <td><?php echo escapar($fila['nombre']); ?></td>
+                <td>
+                  <a class="libro-enlace" href="index.php?c=libro&amp;a=detalle&amp;id=<?php echo (int) $fila['id']; ?><?php echo $busqueda !== '' ? '&amp;q=' . rawurlencode($busqueda) : ''; ?><?php echo $incluirInactivos ? '&amp;inactivos=1' : ''; ?>">
+                    <?php echo escapar($fila['nombre']); ?>
+                  </a>
+                </td>
                 <td><?php echo escapar($fila['autor']); ?></td>
                 <td><?php echo escapar($fila['categoria']); ?></td>
                 <td class="col-num">$ <?php echo number_format((float) $fila['precio'], 2, ',', '.'); ?></td>

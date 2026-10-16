@@ -1370,9 +1370,105 @@ form .btn-accion {
   color: var(--verde-oscuro);
 }
 
+.libro-enlace {
+  color: var(--verde-oscuro);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--dorado);
+  text-underline-offset: 0.2em;
+}
+
+.libro-enlace:hover,
+.libro-enlace:focus-visible {
+  color: var(--vino);
+}
+
+.libro-detalle {
+  padding: 2rem;
+  background: var(--pergamino);
+  border: 1px solid var(--dorado);
+  border-radius: 8px;
+  box-shadow: 0 18px 40px -18px rgba(20, 42, 31, 0.6);
+}
+
+.libro-detalle__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--pergamino-linea);
+}
+
+.libro-detalle__encabezado h2 {
+  margin: 0.25rem 0;
+  color: var(--verde-oscuro);
+  font-family: var(--fuente-titulo);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+.libro-detalle__categoria,
+.libro-detalle__autor {
+  margin: 0;
+  color: #55493a;
+  font-family: var(--fuente-titulo);
+}
+
+.libro-detalle__datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--pergamino-linea);
+}
+
+.libro-detalle__datos dt {
+  margin-bottom: 0.3rem;
+  color: #55493a;
+  font-family: var(--fuente-campo);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.libro-detalle__datos dd {
+  margin: 0;
+  color: var(--tinta);
+  font-size: 1.05rem;
+}
+
+.libro-detalle__descripcion {
+  padding-top: 1rem;
+}
+
+.libro-detalle__descripcion h3 {
+  color: var(--verde-oscuro);
+  font-family: var(--fuente-titulo);
+}
+
+.libro-detalle__descripcion p {
+  color: var(--tinta);
+  line-height: 1.7;
+  white-space: normal;
+}
+
+.libro-detalle__acciones {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+}
+
 @media (max-width: 620px) {
   .campo-doble {
     grid-template-columns: 1fr;
+  }
+
+  .libro-detalle {
+    padding: 1.25rem;
+  }
+
+  .libro-detalle__encabezado {
+    flex-direction: column;
   }
 
   .abm__barra {
