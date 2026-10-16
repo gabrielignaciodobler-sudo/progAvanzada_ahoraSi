@@ -80,7 +80,7 @@ $recaptchaSiteKey = '6Le1TM0tAAAAACvxeirW5N62-dAb8khdivkvkn41';
 
 </main>
 
-<script src="js/scripLogin.js" type="text/javascript"></script>
+<script src="js/scriptLogin.js" type="text/javascript"></script>
 <?php include("php/footer.php"); ?>  
 </body>
 </html>
