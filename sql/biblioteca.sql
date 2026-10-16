@@ -68,7 +68,7 @@ CREATE TABLE productos (
 --        echo password_hash('miClave', PASSWORD_DEFAULT);
 -- ----------------------------------------------------------------------------
 INSERT INTO usuarios (usuario, password, rol) VALUES
-    ('fcytuader', '$2y$10$Y9TNll.Bv0zlfaJmrLSOjOeQMSyvRh9JDIXK98aV0i5GeCnhNi9L2', 'admin'),
+    ('fcytuader', '$2y$10$Y9TNll.Bv0zlfaJmrLSOjOeQMSyvRh9JDIXK98aV0i5GeCnhNi9L2', 'bibliotecario'),
     ('admin',     '$2y$10$HHJT7Uy9lZ2hySFlpr2/Ou0j0NxB27VLDWOlrvpFJRCyvFR4pWCYi', 'admin');
 
 -- ----------------------------------------------------------------------------
