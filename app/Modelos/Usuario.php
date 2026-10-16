@@ -54,8 +54,8 @@ class Usuario
         return $fila;
     }
 
-    /** Roles permitidos en el registro de usuarios. */
-    public const ROLES_REGISTRO = ['lector', 'bibliotecario'];
+    /** El registro público solo puede crear cuentas lectoras. */
+    public const ROLES_REGISTRO = ['lector'];
     public const ROLES_CUENTA = ['admin', 'bibliotecario', 'lector'];
 
     /**

@@ -38,12 +38,6 @@
     <form class="form--registro" action="index.php?c=auth&a=registro" method="post">
         <input type="text" id="usuario" name="usuario" placeholder="Nombre de usuario" maxlength="50" required autocomplete="username">
 
-        <select id="rol" name="rol" required>
-            <option value="" disabled selected>Seleccioná un rol</option>
-            <option value="lector">Lector</option>
-            <option value="bibliotecario">Bibliotecario</option>
-        </select>
-
         <input type="password" id="password" name="password" placeholder="Contraseña" required autocomplete="new-password">
 
         <div class="captcha-box">

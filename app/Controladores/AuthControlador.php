@@ -115,7 +115,7 @@ class AuthControlador extends Controlador
 
         $usuario           = trim((string) ($_POST['usuario'] ?? ''));
         $password          = (string) ($_POST['password'] ?? '');
-        $rol               = trim((string) ($_POST['rol'] ?? ''));
+        $rol               = 'lector';
         $recaptchaResponse = (string) ($_POST['g-recaptcha-response'] ?? '');
 
         // 1) Validación reCAPTCHA
@@ -127,13 +127,8 @@ class AuthControlador extends Controlador
         }
 
         // 2) Validación de campos requeridos
-        if ($usuario === '' || $password === '' || $rol === '') {
+        if ($usuario === '' || $password === '') {
             $_SESSION['error'] = 'Por favor, completá todos los campos requeridos.';
-            $this->redirigir('index.php?c=auth&a=registro');
-        }
-
-        if (!in_array($rol, Usuario::ROLES_REGISTRO, true)) {
-            $_SESSION['error'] = 'El rol seleccionado no es válido.';
             $this->redirigir('index.php?c=auth&a=registro');
         }
 

@@ -119,7 +119,8 @@ function mostrarErrorConexion(): void
         http_response_code(503);
     }
 
-    $css = 'assets/css/style.css';
+    $rutaBase = rtrim(str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? ''))), '/');
+    $css = $rutaBase . '/assets/css/style.css';
     $raiz = dirname(__DIR__);
     $versionCss = is_file($raiz . '/assets/css/style.css') ? filemtime($raiz . '/assets/css/style.css') : time();
     ?>
@@ -131,7 +132,7 @@ function mostrarErrorConexion(): void
   <title>Biblioteca - Error de conexión</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?php echo $css; ?>?v=<?php echo $versionCss; ?>">
+  <link rel="stylesheet" href="<?php echo htmlspecialchars($css, ENT_QUOTES, 'UTF-8'); ?>?v=<?php echo $versionCss; ?>">
 </head>
 <body class="auth-page">
 <?php include $raiz . '/vistas/layouts/header.php'; ?>
