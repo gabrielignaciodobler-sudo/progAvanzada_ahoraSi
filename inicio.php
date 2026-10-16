@@ -1,13 +1,11 @@
 <?php
-session_start();
+require_once __DIR__ . '/php/auth.php';
 
-if (empty($_SESSION['logueado']) || $_SESSION['logueado'] !== true) {
-    header('Location: login.php');
-    exit;
-}
+requerirLogin();
+$puedeGestionar = puedeGestionarLibros();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,8 +18,10 @@ if (empty($_SESSION['logueado']) || $_SESSION['logueado'] !== true) {
 <body>
 <?php include("php/header.php"); ?>
 <main class="home-hero">
-  <p class="bienvenida-central">¡Bienvenido <?php echo htmlspecialchars($_SESSION['usuario'] ?? 'usuario', ENT_QUOTES, 'UTF-8'); ?>!, ¿que vamos a leer hoy?</p>
-  <a href="libros.php" class="btn-login btn-login--compact">Administrar catálogo de libros</a>
+  <p class="bienvenida-central">¡Bienvenido <?php echo escapar(usuarioActual()); ?>!, ¿que vamos a leer hoy?</p>
+  <a href="libros.php" class="btn-login btn-login--compact">
+    <?php echo $puedeGestionar ? 'Administrar catálogo de libros' : 'Ver catálogo de libros'; ?>
+  </a>
 </main>
 <?php include("php/footer.php"); ?>  
 </body>

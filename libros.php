@@ -15,12 +15,13 @@ require_once __DIR__ . '/modelos/Libro.php';
 
 requerirLogin();
 
-$flash      = tomarFlash();
-$errorPagina = '';
-$libros     = [];
+$puedeGestionar   = puedeGestionarLibros();
+$flash            = tomarFlash();
+$errorPagina      = '';
+$libros           = [];
 
-$busqueda       = trim((string) ($_GET['q'] ?? ''));
-$incluirInactivos = isset($_GET['inactivos']) && $_GET['inactivos'] === '1';
+$busqueda         = trim((string) ($_GET['q'] ?? ''));
+$incluirInactivos = $puedeGestionar && isset($_GET['inactivos']) && $_GET['inactivos'] === '1';
 
 try {
     $pdo   = conectarBD();
@@ -49,9 +50,13 @@ try {
     <div class="abm__barra">
       <div>
         <h1 class="abm__titulo">Catálogo de Libros</h1>
-        <p class="abm__subtitulo">Alta &middot; Baja &middot; Modificación &middot; Consulta</p>
+        <p class="abm__subtitulo">
+          <?php echo $puedeGestionar ? 'Alta &middot; Baja &middot; Modificación &middot; Consulta' : 'Consulta de libros disponibles'; ?>
+        </p>
       </div>
-      <a href="libro_formulario.php" class="btn-login btn-login--compact">+ Nuevo libro</a>
+      <?php if ($puedeGestionar) : ?>
+        <a href="libro_formulario.php" class="btn-login btn-login--compact">+ Nuevo libro</a>
+      <?php endif; ?>
     </div>
 
     <?php if ($flash !== null) : ?>
@@ -67,10 +72,12 @@ try {
     <form method="get" action="libros.php" class="abm__filtros">
       <input type="text" name="q" placeholder="Buscar por título o autor"
              value="<?php echo escapar($busqueda); ?>">
-      <label class="abm__check">
-        <input type="checkbox" name="inactivos" value="1" <?php echo $incluirInactivos ? 'checked' : ''; ?>>
-        Mostrar dados de baja
-      </label>
+      <?php if ($puedeGestionar) : ?>
+        <label class="abm__check">
+          <input type="checkbox" name="inactivos" value="1" <?php echo $incluirInactivos ? 'checked' : ''; ?>>
+          Mostrar dados de baja
+        </label>
+      <?php endif; ?>
       <button type="submit">Buscar</button>
       <?php if ($busqueda !== '' || $incluirInactivos) : ?>
         <a href="libros.php" class="abm__limpiar">Limpiar</a>
@@ -91,7 +98,9 @@ try {
               <th class="col-num">Precio</th>
               <th class="col-num">Stock</th>
               <th>Estado</th>
-              <th class="col-acciones">Acciones</th>
+              <?php if ($puedeGestionar) : ?>
+                <th class="col-acciones">Acciones</th>
+              <?php endif; ?>
             </tr>
           </thead>
           <tbody>
@@ -109,29 +118,31 @@ try {
                     <?php echo $activo ? 'Activo' : 'Dado de baja'; ?>
                   </span>
                 </td>
-                <td class="col-acciones">
-                  <div class="acciones">
-                    <a href="libro_formulario.php?id=<?php echo (int) $fila['id']; ?>" class="btn-accion">Editar</a>
+                <?php if ($puedeGestionar) : ?>
+                  <td class="col-acciones">
+                    <div class="acciones">
+                      <a href="libro_formulario.php?id=<?php echo (int) $fila['id']; ?>" class="btn-accion">Editar</a>
 
-                    <?php if ($activo) : ?>
-                      <form action="libro_eliminar.php" method="post" class="form-inline"
-                            onsubmit="return confirm('¿Confirmás dar de baja «<?php echo escapar($fila['nombre']); ?>»?');">
-                        <?php echo campoCsrf(); ?>
-                        <input type="hidden" name="id" value="<?php echo (int) $fila['id']; ?>">
-                        <input type="hidden" name="accion" value="eliminar">
-                        <button type="submit" class="btn-accion btn-accion--peligro">Baja</button>
-                      </form>
-                    <?php else : ?>
-                      <form action="libro_eliminar.php" method="post" class="form-inline"
-                            onsubmit="return confirm('¿Reactivar «<?php echo escapar($fila['nombre']); ?>»?');">
-                        <?php echo campoCsrf(); ?>
-                        <input type="hidden" name="id" value="<?php echo (int) $fila['id']; ?>">
-                        <input type="hidden" name="accion" value="restaurar">
-                        <button type="submit" class="btn-accion btn-accion--ok">Reactivar</button>
-                      </form>
-                    <?php endif; ?>
-                  </div>
-                </td>
+                      <?php if ($activo) : ?>
+                        <form action="libro_eliminar.php" method="post" class="form-inline"
+                              onsubmit="return confirm('¿Confirmás dar de baja «<?php echo escapar($fila['nombre']); ?>»?');">
+                          <?php echo campoCsrf(); ?>
+                          <input type="hidden" name="id" value="<?php echo (int) $fila['id']; ?>">
+                          <input type="hidden" name="accion" value="eliminar">
+                          <button type="submit" class="btn-accion btn-accion--peligro">Baja</button>
+                        </form>
+                      <?php else : ?>
+                        <form action="libro_eliminar.php" method="post" class="form-inline"
+                              onsubmit="return confirm('¿Reactivar «<?php echo escapar($fila['nombre']); ?>»?');">
+                          <?php echo campoCsrf(); ?>
+                          <input type="hidden" name="id" value="<?php echo (int) $fila['id']; ?>">
+                          <input type="hidden" name="accion" value="restaurar">
+                          <button type="submit" class="btn-accion btn-accion--ok">Reactivar</button>
+                        </form>
+                      <?php endif; ?>
+                    </div>
+                  </td>
+                <?php endif; ?>
               </tr>
             <?php endforeach; ?>
           </tbody>

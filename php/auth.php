@@ -50,6 +50,33 @@ function rolActual(): ?string
     return isset($_SESSION['rol']) ? (string) $_SESSION['rol'] : null;
 }
 
+/**
+ * Determina si el usuario logueado tiene permisos de ABM sobre libros.
+ * Los roles con permisos son 'admin' y 'bibliotecario'.
+ * El rol 'lector' NO tiene permisos de ABM (solo lectura).
+ */
+function puedeGestionarLibros(): bool
+{
+    $rol = rolActual();
+
+    return $rol === 'admin' || $rol === 'bibliotecario';
+}
+
+/**
+ * Exige permisos de ABM. Si el usuario no tiene permisos (por ejemplo, 'lector'),
+ * se cancela la operación y se redirige a libros.php con un mensaje explicativo.
+ */
+function requerirPermisoGestion(): void
+{
+    requerirLogin();
+
+    if (!puedeGestionarLibros()) {
+        setFlash('error', 'Acceso denegado: tu rol de «' . escapar(rolActual() ?? 'desconocido') . '» no tiene permisos para realizar altas, bajas o modificaciones de libros.');
+        header('Location: libros.php');
+        exit;
+    }
+}
+
 /** Escapa texto para mostrarlo de forma segura en HTML. */
 function escapar(?string $texto): string
 {

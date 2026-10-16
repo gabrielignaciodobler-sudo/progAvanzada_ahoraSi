@@ -14,6 +14,7 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/modelos/Libro.php';
 
 requerirLogin();
+requerirPermisoGestion();
 
 /* Solo se acepta POST. */
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
